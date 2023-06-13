@@ -31,7 +31,7 @@ class LocalLogFile: LogFile{
         fileHandle = nil
     }
     
-    override func load(){
+    override func load() async -> Bool {
         if FileManager.default.fileExists(atPath: url.path){
             do{
                 preferences = GlobalPreferences.shared.getDocumentPreferences(url: url)
@@ -42,11 +42,13 @@ class LocalLogFile: LogFile{
                 }
                 Log.debug("end read")
                 setEventSource()
+                return true
             }
             catch{
                 Swift.print(error.localizedDescription)
             }
         }
+        return false
     }
     
     func setEventSource(){

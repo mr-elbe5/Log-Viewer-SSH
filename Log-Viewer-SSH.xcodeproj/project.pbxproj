@@ -54,7 +54,7 @@
 		4EBBE4CE2A38522D0063381E /* HelpWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EBBE4CC2A38522D0063381E /* HelpWindowController.swift */; };
 		4EBBE4CF2A38522D0063381E /* HelpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EBBE4CD2A38522D0063381E /* HelpViewController.swift */; };
 		4EBBE4D42A3852D60063381E /* Citadel in Frameworks */ = {isa = PBXBuildFile; productRef = 4EBBE4D32A3852D60063381E /* Citadel */; };
-		4EBBE4D72A3883550063381E /* SSHConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EBBE4D62A3883550063381E /* SSHConnection.swift */; };
+		4EBBE4D72A3883550063381E /* SSHClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EBBE4D62A3883550063381E /* SSHClient.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -106,7 +106,7 @@
 		4EBBE4C52A38521E0063381E /* GlobalPreferencesWindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlobalPreferencesWindowController.swift; sourceTree = "<group>"; };
 		4EBBE4CC2A38522D0063381E /* HelpWindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HelpWindowController.swift; sourceTree = "<group>"; };
 		4EBBE4CD2A38522D0063381E /* HelpViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HelpViewController.swift; sourceTree = "<group>"; };
-		4EBBE4D62A3883550063381E /* SSHConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHConnection.swift; sourceTree = "<group>"; };
+		4EBBE4D62A3883550063381E /* SSHClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHClient.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -195,7 +195,6 @@
 				4EBBE4B32A38520A0063381E /* LogWindowController+Toolbar.swift */,
 				4EBBE4B62A38520A0063381E /* OpenRemoteLogDialog.swift */,
 				4EBBE4B72A38520A0063381E /* RemoteLogFile.swift */,
-				4EBBE4D62A3883550063381E /* SSHConnection.swift */,
 			);
 			path = Log;
 			sourceTree = "<group>";
@@ -231,6 +230,7 @@
 				4EBBE48F2A38518A0063381E /* PopupWindow.swift */,
 				4EBBE48C2A38518A0063381E /* PopupWindowController.swift */,
 				4EBBE48E2A38518A0063381E /* RadioGroup.swift */,
+				4EBBE4D62A3883550063381E /* SSHClient.swift */,
 				4EBBE47A2A3851770063381E /* String.swift */,
 				4EBBE47C2A3851770063381E /* StringLocalizer.swift */,
 				4EBBE47B2A3851770063381E /* StringProtocol.swift */,
@@ -357,7 +357,7 @@
 				4EBBE4A62A3851980063381E /* Array.swift in Sources */,
 				4EBBE4A72A3851980063381E /* Codable.swift in Sources */,
 				4EBBE4AF2A3851AE0063381E /* main.swift in Sources */,
-				4EBBE4D72A3883550063381E /* SSHConnection.swift in Sources */,
+				4EBBE4D72A3883550063381E /* SSHClient.swift in Sources */,
 				4EBBE4B92A38520A0063381E /* LocalLogFile.swift in Sources */,
 				4EBBE49D2A38518A0063381E /* NSMenuItem.swift in Sources */,
 				4EBBE4762A3851680063381E /* StoreWindowController.swift in Sources */,

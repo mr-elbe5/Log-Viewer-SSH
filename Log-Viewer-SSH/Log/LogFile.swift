@@ -51,8 +51,8 @@ class LogFile: NSObject, PreferencesDelegate{
     func releaseLogSource(){
     }
     
-    func load(){
-        
+    func load() async -> Bool{
+        false
     }
     
     func savePreferences(){

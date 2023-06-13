@@ -22,7 +22,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             await Store.shared.load()
         }
         if LogPool.shared.documentWindowControllers.isEmpty{
-            LogPool.shared.openDocument(sender: nil)
+            LogPool.shared.openRemoteDocument(sender: nil)
         }
     }
     

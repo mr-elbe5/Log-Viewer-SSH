@@ -11,9 +11,9 @@ import Foundation
 import Cocoa
 import Citadel
 
-class SSHConnection{
+extension SSHClient{
     
-    func connect(server: String, port: Int = 22, user: String, password: String) async throws -> SSHClient?{
+    static func connect(server: String, port: Int = 22, user: String, password: String) async throws -> SSHClient?{
         let client = try await SSHClient.connect(
             host: server,
             port: port,
@@ -27,25 +27,27 @@ class SSHConnection{
         return nil
     }
     
-    func connectionTest(server: String, port: Int = 22, user: String, password: String, path: String, oncomplete: @escaping (Bool) -> Void) {
-        Task{
-            do{
-                var result = false
-                print("starting test")
-                if let client = try await connect(server: server, port: port, user: user, password: password){
-                    var buffer = try await client.executeCommand("cat " + path)
-                    if let bytes = buffer.readBytes(length: min(10, buffer.readableBytes)), !bytes.isEmpty{
-                        buffer.discardReadBytes()
-                        result = true
+    static func connectionTest(server: String, port: Int, user: String, password: String, path: String, oncomplete: @escaping (Bool) -> Void) {
+        DispatchQueue.global(qos: .background).async{
+            Task{
+                do{
+                    var result = false
+                    print("starting test")
+                    if let client = try await connect(server: server, port: port, user: user, password: password){
+                        var buffer = try await client.executeCommand("cat " + path)
+                        if let bytes = buffer.readBytes(length: min(10, buffer.readableBytes)), !bytes.isEmpty{
+                            buffer.discardReadBytes()
+                            result = true
+                        }
+                        try await client.close()
+                        print("ready")
+                        oncomplete(result)
                     }
-                    try await client.close()
-                    print("ready")
-                    oncomplete(result)
                 }
-            }
-            catch let(err){
-                print(err)
-                oncomplete(false)
+                catch let(err){
+                    print(err)
+                    oncomplete(false)
+                }
             }
         }
     }

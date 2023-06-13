@@ -8,7 +8,7 @@
 */
 
 import Cocoa
-
+import Citadel
 
 public class OpenRemoteLogDialog: NSWindowController, NSWindowDelegate {
     
@@ -111,7 +111,7 @@ class OpenRemoteLogViewController: ViewController {
     
     func readValues(){
         sshServer = serverField.stringValue
-        sshPort = Int(serverField.intValue)
+        sshPort = Int(portField.intValue)
         sshUser = userField.stringValue
         sshPassword = passwordField.stringValue
         path = pathField.stringValue
@@ -122,18 +122,15 @@ class OpenRemoteLogViewController: ViewController {
         if !isValid{
             return
         }
-        SSHConnection().connectionTest(server: sshServer, user: sshUser, password: sshPassword, path: path){ result in
-            if result{
-                DispatchQueue.main.async {
-                    NSAlert.acceptInfo(message: "Connection test succeeded")
-                    self.openButton?.isEnabled = true
-                }
+        SSHClient.connectionTest(server: sshServer, port: sshPort, user: sshUser, password: sshPassword, path: path){ result in
+            DispatchQueue.main.async {
+                self.openButton?.isEnabled = result
             }
         }
     }
     
     @objc open func open(){
-        
+        NSApp.stopModal(withCode: isValid ? .OK : .cancel)
     }
     
 }

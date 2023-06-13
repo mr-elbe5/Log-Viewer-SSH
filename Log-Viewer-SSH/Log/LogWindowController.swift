@@ -58,9 +58,12 @@ class LogWindowController: NSWindowController {
     func setupViewController(){
         let viewController = LogViewController(logDocument: logDocument)
         contentViewController = viewController
-        DispatchQueue.main.async{
-            self.logDocument.load()
-            self.documentViewController.updateFromDocument()
+        Task(){
+            if await self.logDocument.load(){
+                DispatchQueue.main.async{
+                    self.documentViewController.updateFromDocument()
+                }
+            }
         }
     }
     
