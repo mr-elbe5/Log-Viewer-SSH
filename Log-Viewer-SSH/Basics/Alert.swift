@@ -22,5 +22,13 @@ extension NSAlert{
         let result = alert.runModal()
         return result == NSApplication.ModalResponse.alertFirstButtonReturn
     }
+    
+    static func acceptInfo(message: String){
+        let alert = NSAlert()
+        alert.alertStyle = .informational
+        alert.messageText = message
+        alert.addButton(withTitle: "Ok")
+        alert.runModal()
+    }
 
 }

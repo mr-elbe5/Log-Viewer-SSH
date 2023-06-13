@@ -14,6 +14,10 @@ class LocalLogFile: LogFile{
     
     var url: URL
     
+    var isValid: Bool{
+        !url.path.isEmpty
+    }
+    
     private var fileHandle: FileHandle? = nil
     private var eventSource: DispatchSourceFileSystemObject? = nil
     
@@ -34,13 +38,7 @@ class LocalLogFile: LogFile{
                 fileHandle = try FileHandle(forReadingFrom: url)
                 Log.debug("start read")
                 if GlobalPreferences.shared.showFullFile, let data = fileHandle?.readDataToEndOfFile(){
-                    let str = String(data: data, encoding: .utf8) ?? ""
-                    if GlobalPreferences.shared.maxLines != 0{
-                        chunks.append(LogChunk(str.substr(lines: GlobalPreferences.shared.maxLines)))
-                    }
-                    else{
-                        chunks.append(LogChunk(str))
-                    }
+                    appendChunks(data: data)
                 }
                 Log.debug("end read")
                 setEventSource()
@@ -86,8 +84,7 @@ class LocalLogFile: LogFile{
             return
         }
         if let data = fileHandle?.readDataToEndOfFile(){
-            let chunk = LogChunk(String(data: data, encoding: .utf8) ?? "")
-            chunks.append(chunk)
+            appendChunks(data: data)
             viewController?.updateFromDocument()
         }
     }

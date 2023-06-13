@@ -112,7 +112,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     @objc func openRemoteLogFile() {
-        LogPool.shared.openDocument(sender: nil)
+        LogPool.shared.openRemoteDocument(sender: nil)
     }
     
     @objc func closeFile() {

@@ -78,21 +78,37 @@ extension LogPool: LogWindowDelegate{
         panel.canChooseDirectories = false
         if NSApp.runModal(for: panel) == .OK, let url = panel.urls.first{
             let document = LocalLogFile(url: url)
-            let controller = LogWindowController(document: document)
-            controller.delegate = self
-            guard let window = controller.window else {return}
-            NotificationCenter.default.addObserver(forName:NSWindow.willCloseNotification, object: window, queue: nil){ [unowned self] notification in
-                guard let window = notification.object as? NSWindow else { return }
-                self.removeController(forWindow: window)
-            }
-            documentWindowControllers.append(controller)
-            if GlobalPreferences.shared.useTabs, let sender = sender{
-                sender.window!.addTabbedWindow(controller.window!, ordered: .above)
-            }
-            else{
-                controller.showWindow(nil)
-            }
+            addController(for: document, sender: sender)
         }
+    }
+    
+    func openRemoteDocument(sender: LogWindowController?) {
+        let dialog = OpenRemoteLogDialog()
+        if NSApp.runModal(for: dialog.window!) == .OK{
+            let document = RemoteLogFile(server: dialog.sshServer, port: dialog.sshPort, user: dialog.sshUser, password: dialog.sshPassword, path: dialog.path)
+            addController(for: document, sender: sender)
+        }
+    }
+    
+    func addController(for document: LogFile, sender: LogWindowController?) {
+        let controller = LogWindowController(document: document)
+        registerController(controller: controller)
+        if GlobalPreferences.shared.useTabs, let sender = sender{
+            sender.window!.addTabbedWindow(controller.window!, ordered: .above)
+        }
+        else{
+            controller.showWindow(nil)
+        }
+    }
+    
+    func registerController(controller: LogWindowController) {
+        controller.delegate = self
+        guard let window = controller.window else {return}
+        NotificationCenter.default.addObserver(forName:NSWindow.willCloseNotification, object: window, queue: nil){ [unowned self] notification in
+            guard let window = notification.object as? NSWindow else { return }
+            self.removeController(forWindow: window)
+        }
+        documentWindowControllers.append(controller)
     }
     
     func newWindowForTab(from: LogWindowController) {
@@ -103,6 +119,7 @@ extension LogPool: LogWindowDelegate{
         if NSApp.runModal(for: panel) == .OK, let url = panel.urls.first{
             let document = LocalLogFile(url: url)
             let controller = LogWindowController(document: document)
+            registerController(controller: controller)
             from.window!.addTabbedWindow(controller.window!, ordered: .above)
         }
     }

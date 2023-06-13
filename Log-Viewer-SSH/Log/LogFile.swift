@@ -28,6 +28,26 @@ class LogFile: NSObject, PreferencesDelegate{
         releaseLogSource()
     }
     
+    func appendChunks(data: Data){
+        let str = String(data: data, encoding: .utf8) ?? ""
+        if GlobalPreferences.shared.maxLines != 0{
+            chunks.append(LogChunk(str.substr(lines: GlobalPreferences.shared.maxLines)))
+        }
+        else{
+            chunks.append(LogChunk(str))
+        }
+    }
+    
+    func appendChunks(bytes: [UInt8]){
+        let str = String(bytes: bytes, encoding: .utf8) ?? ""
+        if GlobalPreferences.shared.maxLines != 0{
+            chunks.append(LogChunk(str.substr(lines: GlobalPreferences.shared.maxLines)))
+        }
+        else{
+            chunks.append(LogChunk(str))
+        }
+    }
+    
     func releaseLogSource(){
     }
     
