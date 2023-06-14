@@ -87,7 +87,6 @@ extension LogPool: LogWindowDelegate{
             if dialog.logData.isLocal{
                 let document = LocalLogFile(logData: dialog.logData)
                 addController(for: document, sender: sender)
-                LogHistory.shared.addData(document.logData)
             }
             else{
                 let document = RemoteLogFile(logData: dialog.logData)
@@ -123,17 +122,7 @@ extension LogPool: LogWindowDelegate{
     }
     
     func newWindowForTab(from: LogWindowController) {
-        let panel = NSOpenPanel()
-        panel.allowsMultipleSelection = false
-        panel.canChooseFiles = true
-        panel.canChooseDirectories = false
-        if NSApp.runModal(for: panel) == .OK, let url = panel.urls.first{
-            let document = LocalLogFile(logData: LogData(path: url.path))
-            let controller = LogWindowController(document: document)
-            registerController(controller: controller)
-            from.window!.addTabbedWindow(controller.window!, ordered: .above)
-            LogHistory.shared.addData(document.logData)
-        }
+        openDocument(sender: from)
     }
     
 }

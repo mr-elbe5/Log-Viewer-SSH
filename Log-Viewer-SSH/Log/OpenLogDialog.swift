@@ -44,14 +44,13 @@ class OpenLogViewController: ViewController {
     
     var logData = LogData()
     
-    let scrollView = NSScrollView()
-    let contentView = NSView()
-    
     var serverField = NSTextField(string: "")
     var portField = NSTextField(string: String(22))
     var userField = NSTextField(string: "")
     var passwordField = NSSecureTextField(string: "")
     var pathField = NSTextField(string: "")
+    
+    var stackView = NSStackView()
     
     var openButton: NSButton? = nil
     
@@ -59,34 +58,50 @@ class OpenLogViewController: ViewController {
         view = NSView()
         view.frame = CGRect(x: 0, y: 0, width: 600, height: 400)
         
-        scrollView.asVerticalScrollView(inView: view, contentView: contentView)
-        var lastAnchor: NSLayoutYAxisAnchor = contentView.topAnchor
-        let documents = LogHistory.shared.logHistory
-        if documents.isEmpty{
-            let label = NSTextField(labelWithString: "There are no recent files")
-            contentView.addSubview(label)
-            label.placeBelow(anchor: contentView.topAnchor, insets: Insets.defaultInsets)
-            lastAnchor = label.bottomAnchor
+        let label = NSTextField(labelWithString: "Recent remote logs:")
+        view.addSubview(label)
+        label.placeBelow(anchor: view.topAnchor)
+        
+        let scrollView = NSScrollView()
+        scrollView.hasVerticalScroller = true
+        scrollView.hasHorizontalScroller = false
+        view.addSubview(scrollView)
+        scrollView.placeBelow(view: label)
+        scrollView.height(200)
+        let clipView = FlippedClipView()
+        scrollView.contentView = clipView
+        clipView.fillSuperview(insets: Insets.defaultInsets)
+        stackView.orientation = .vertical
+        stackView.alignment = .leading
+        stackView.spacing = 10
+        clipView.addSubview(stackView)
+        stackView.fillSuperview(insets: Insets.defaultInsets)
+        let logHistory = LogHistory.shared.logHistory
+        if logHistory.isEmpty{
+            let nolabel = NSTextField(labelWithString: "There are no recent remote logs")
+            stackView.addArrangedSubview(nolabel)
+            nolabel.placeBelow(view: label, insets: Insets.defaultInsets)
         }
         else{
-            for document in documents{
-                let button = NSButton(title: document.path, target: self, action: #selector(openRecent))
-                contentView.addSubview(button)
-                button.placeBelow(anchor: lastAnchor, insets: Insets.defaultInsets)
-                button.refusesFirstResponder = true
-                lastAnchor = button.bottomAnchor
+            for logData in logHistory{
+                let button = RecentLogButton(logData: logData, target: self, action: #selector(openRecent))
+                stackView.addArrangedSubview(button)
             }
         }
         
+        let clearHistoryButton = NSButton(title: "Clear History", target: self, action: #selector(clearHistory))
+        view.addSubview(clearHistoryButton)
+        clearHistoryButton.placeBelow(view: scrollView, insets: Insets.defaultInsets)
+        clearHistoryButton.refusesFirstResponder = true
+        
         let grid = NSGridView()
+        view.addSubview(grid)
+        grid.placeBelow(view: clearHistoryButton, insets: Insets.doubleInsets)
         grid.addLabeledRow(label: "Server:", views: [serverField])
         grid.addLabeledRow(label: "Port:", views: [portField])
         grid.addLabeledRow(label: "User:", views: [userField])
         grid.addLabeledRow(label: "Password:", views: [passwordField])
         grid.addLabeledRow(label: "Path:", views: [pathField])
-        
-        view.addSubview(grid)
-        grid.placeBelow(anchor: lastAnchor)
         
         let testRemoteButton = NSButton(title: "Test remote", target: self, action: #selector(testRemote))
         view.addSubview(testRemoteButton)
@@ -119,11 +134,26 @@ class OpenLogViewController: ViewController {
         logData.path = pathField.stringValue
     }
     
-    @objc open func openRecent(){
-        
+    @objc func clearHistory(){
+        for sv in stackView.arrangedSubviews{
+            stackView.removeArrangedSubview(sv)
+        }
+        stackView.removeAllSubviews()
+        LogHistory.shared.logHistory.removeAll()
+        LogHistory.shared.save()
     }
     
-    @objc open func testRemote(){
+    @objc func openRecent(sender: AnyObject?){
+        if let button = sender as? RecentLogButton{
+            serverField.stringValue = button.logData.sshServer
+            portField.stringValue = String(button.logData.sshPort)
+            userField.stringValue = button.logData.sshUser
+            passwordField.stringValue = button.logData.sshPassword
+            pathField.stringValue = button.logData.path
+        }
+    }
+    
+    @objc func testRemote(){
         readValues()
         if !logData.isValidRemote{
             return
@@ -135,11 +165,11 @@ class OpenLogViewController: ViewController {
         }
     }
     
-    @objc open func openRemote(){
+    @objc func openRemote(){
         NSApp.stopModal(withCode: logData.isValidRemote ? .OK : .cancel)
     }
     
-    @objc open func openLocal(){
+    @objc func openLocal(){
         let panel = NSOpenPanel()
         panel.allowsMultipleSelection = false
         panel.canChooseFiles = true
@@ -149,6 +179,25 @@ class OpenLogViewController: ViewController {
             self.logData.path = url.path
             view.window?.close()
         }
+    }
+    
+}
+
+class RecentLogButton: NSButton{
+    
+    var logData: LogData
+    
+    init(logData: LogData, target: AnyObject?, action: Selector){
+        self.logData = logData
+        super.init(frame: .zero)
+        title = logData.displayName
+        self.target = target
+        self.action = action
+        self.bezelStyle = .roundRect
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
 }

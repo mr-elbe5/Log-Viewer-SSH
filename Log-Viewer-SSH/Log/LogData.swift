@@ -47,6 +47,12 @@ class LogData: NSObject, Codable {
         !sshServer.isEmpty && !sshUser.isEmpty && !sshPassword.isEmpty && !path.isEmpty
     }
     
+    var displayName: String{
+        isLocal ?
+        "local: \(path)" :
+        "ssh: \(sshServer):\(path)"
+    }
+    
     override init(){
         self.path = ""
         super.init()
@@ -73,7 +79,7 @@ class LogData: NSObject, Codable {
     
     required init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
-        sshServer = try values.decodeIfPresent(String.self, forKey: .path) ?? ""
+        sshServer = try values.decodeIfPresent(String.self, forKey: .server) ?? ""
         sshPort = try values.decodeIfPresent(Int.self, forKey: .port) ?? 22
         sshUser = try values.decodeIfPresent(String.self, forKey: .user) ?? ""
         sshPassword = try values.decodeIfPresent(String.self, forKey: .password) ?? ""
