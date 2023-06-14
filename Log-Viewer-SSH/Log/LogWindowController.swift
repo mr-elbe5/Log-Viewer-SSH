@@ -29,16 +29,16 @@ class LogWindowController: NSWindowController {
 
     var delegate : LogWindowDelegate? = nil
     
-    var logDocument : LogFile
+    var logFile : LogFile
     
-    var documentViewController : LogViewController {
+    var logViewController : LogViewController {
         get{
             contentViewController as! LogViewController
         }
     }
     
     init(document: LogFile){
-        logDocument = document
+        logFile = document
         let window = NSWindow(contentRect: LogPool.defaultRect, styleMask: [.titled, .closable, .miniaturizable, .resizable], backing: .buffered, defer: true)
         window.title = "Log-Viewer"
         window.tabbingMode = GlobalPreferences.shared.useTabs ? .preferred : .automatic
@@ -47,7 +47,7 @@ class LogWindowController: NSWindowController {
         addToolbar()
         setupViewController()
         if GlobalPreferences.shared.rememberWindowFrame{
-            self.window?.setFrameUsingName(logDocument.preferences.id)
+            self.window?.setFrameUsingName(logFile.preferences.id)
         }
     }
     
@@ -56,15 +56,8 @@ class LogWindowController: NSWindowController {
     }
     
     func setupViewController(){
-        let viewController = LogViewController(logDocument: logDocument)
+        let viewController = LogViewController(logFile: logFile)
         contentViewController = viewController
-        Task(){
-            if await self.logDocument.load(){
-                DispatchQueue.main.async{
-                    self.documentViewController.updateFromDocument()
-                }
-            }
-        }
     }
     
 }
@@ -73,7 +66,7 @@ extension LogWindowController: NSWindowDelegate{
     
     func windowWillClose(_ notification: Notification) {
         if GlobalPreferences.shared.rememberWindowFrame{
-            window?.saveFrame(usingName: logDocument.preferences.id)
+            window?.saveFrame(usingName: logFile.preferences.id)
         }
     }
     

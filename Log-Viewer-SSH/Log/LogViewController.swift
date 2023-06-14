@@ -16,16 +16,16 @@ class LogViewController: ViewController {
 
     var defaultSize = NSMakeSize(900, 600)
     
-    var logDocument : LogFile
-    var loaded = false
+    var logFile : LogFile
     
     var follow = true
     
-    init(logDocument: LogFile) {
-        self.logDocument = logDocument
+    init(logFile: LogFile) {
+        self.logFile = logFile
         super.init()
         view.frame = CGRect(x: 0, y: 0, width: defaultSize.width, height: defaultSize.height)
         view.wantsLayer = true
+        logFile.delegate = self
     }
     
     required init?(coder: NSCoder) {
@@ -43,13 +43,6 @@ class LogViewController: ViewController {
         scrollView.documentView = textView
     }
     
-    override func viewDidAppear() {
-        /*if !loaded{
-            reloadFullFile()
-            loaded = true
-        }*/
-    }
-    
     func reset(){
         textView.textStorage?.setAttributedString(NSAttributedString(string: ""))
     }
@@ -58,7 +51,7 @@ class LogViewController: ViewController {
         if !follow{
             return
         }
-        for chunk in logDocument.chunks{
+        for chunk in logFile.chunks{
             if !chunk.displayed{
                 chunk.displayed = true
                 appendText(string: chunk.string)
@@ -70,7 +63,7 @@ class LogViewController: ViewController {
         let oldFollow = follow
         follow = false;
         reset()
-        for chunk in logDocument.chunks{
+        for chunk in logFile.chunks{
             if chunk.displayed{
                 appendText(string: chunk.string)
             }
@@ -81,9 +74,9 @@ class LogViewController: ViewController {
     
     func appendText(string: String) {
         Log.debug("start append text")
-        let prefs = logDocument.preferences
+        let prefs = logFile.preferences
         let font : NSFont = NSFont.monospacedSystemFont(ofSize: CGFloat(GlobalPreferences.shared.fontSize), weight: .medium)
-        if logDocument.preferences.hasColorCoding{
+        if logFile.preferences.hasColorCoding{
             appendColorMarkedText(string, font : font, preferences: prefs)
         }
         else{
@@ -99,7 +92,7 @@ class LogViewController: ViewController {
     
     func reloadFullFile(){
         reset()
-        for chunk in logDocument.chunks{
+        for chunk in logFile.chunks{
             chunk.displayed = true
             appendText(string: chunk.string)
         }
@@ -137,7 +130,7 @@ class LogViewController: ViewController {
             parts.sort{
                 $0.start < $1.start
             }
-            if logDocument.preferences.fullLineColoring{
+            if logFile.preferences.fullLineColoring{
                 let part = parts[0]
                 appendColoredText(string, color: part.color, background: part.background, font: font)
                 appendDefaultText("\n", font: font)
@@ -176,6 +169,19 @@ class LogViewController: ViewController {
     
     private func appendDefaultText(_ string : String, font: NSFont){
         textView.textStorage?.append(NSAttributedString(string: string, attributes: [NSAttributedString.Key.foregroundColor : NSColor.textColor, NSAttributedString.Key.font : font]))
+    }
+    
+}
+
+extension LogViewController: LogDelegate{
+    
+    func logChanged(){
+        updateFromDocument()
+    }
+    
+    func preferencesChanged(){
+        reset()
+        updateFromDocument()
     }
     
 }

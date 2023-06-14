@@ -98,7 +98,7 @@ class DocumentPreferencesViewController:ViewController {
                 log.preferences.patterns[i] = patternFields[i].stringValue
             }
             log.savePreferences()
-            log.preferencesChanged()
+            log.displayPreferencesChanged()
         }
         if let window = view.window{
             window.close()

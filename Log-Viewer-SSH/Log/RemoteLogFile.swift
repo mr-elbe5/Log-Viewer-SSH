@@ -34,26 +34,29 @@ class RemoteLogFile: LogFile{
         super.init()
     }
     
-    override func load() async -> Bool{
-        do{
-            if let client = try await SSHClient.connect(server: self.sshServer, port: self.sshPort, user: self.sshUser, password: self.sshPassword){
-                var buffer = try await client.executeCommand("cat " + self.path)
-                if let bytes = buffer.readBytes(length: buffer.readableBytes), !bytes.isEmpty{
-                    DispatchQueue.main.async{
+    // running on background thread
+    override func load() async throws{
+        if let client = try await SSHClient.connect(server: self.sshServer, port: self.sshPort, user: self.sshUser, password: self.sshPassword){
+            let streams = try await client.executeCommandStream("tail  -f " + path)
+            var asyncStreams = streams.makeAsyncIterator()
+            while let blob = try await asyncStreams.next() {
+                switch blob {
+                case .stdout(let stdout):
+                    if let bytes = stdout.getBytes(at: 0, length: stdout.readableBytes){
                         self.appendChunks(bytes: bytes)
                     }
+                case .stderr(let stderr):
+                    if let bytes = stderr.getBytes(at: 0, length: stderr.readableBytes){
+                        print(String(bytes: bytes, encoding: .utf8) ?? "")
+                    }
                 }
-                try await client.close()
-                return true
             }
-        }catch (let err){
-            print(err)
+            self.client = client
         }
-        return false
     }
     
     override func releaseLogSource(){
-        Task{
+        Task(priority: .background){
             try await client?.close()
         }
     }

@@ -204,11 +204,11 @@ extension LogWindowController: NSToolbarDelegate {
     }
     
     @objc func clearView() {
-        documentViewController.clear()
+        logViewController.clear()
     }
     
     @objc func reloadView() {
-        documentViewController.reloadFullFile()
+        logViewController.reloadFullFile()
     }
     
     @objc func openGlobalPreferences() {
@@ -218,7 +218,7 @@ extension LogWindowController: NSToolbarDelegate {
     }
     
     @objc func openDocumentPreferences() {
-        let controller = DocumentPreferencesWindowController(log: logDocument)
+        let controller = DocumentPreferencesWindowController(log: logFile)
         controller.centerInWindow(outerWindow: window)
         NSApp.runModal(for: controller.window!)
     }
@@ -236,8 +236,8 @@ extension LogWindowController: NSToolbarDelegate {
     }
     
     @objc func start() {
-        documentViewController.follow = true
-        documentViewController.updateFromDocument()
+        logViewController.follow = true
+        logViewController.updateFromDocument()
         if let toolbar = window?.toolbar{
             toolbar.removeItem(at: 3)
             toolbar.insertItem(withItemIdentifier: toolbarItemPause, at: 3)
@@ -245,7 +245,7 @@ extension LogWindowController: NSToolbarDelegate {
     }
     
     @objc func pause() {
-        documentViewController.follow = false
+        logViewController.follow = false
         if let toolbar = window?.toolbar{
             toolbar.removeItem(at: 3)
             toolbar.insertItem(withItemIdentifier: toolbarItemStart, at: 3)
@@ -255,7 +255,7 @@ extension LogWindowController: NSToolbarDelegate {
     func updateStartPause(){
         if let toolbar = window?.toolbar{
             toolbar.removeItem(at: 3)
-            if documentViewController.follow{
+            if logViewController.follow{
                 toolbar.insertItem(withItemIdentifier: toolbarItemPause, at: 3)
             }
             else{

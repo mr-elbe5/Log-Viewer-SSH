@@ -9,12 +9,6 @@
 
 import Foundation
 
-
-
-protocol PreferencesDelegate {
-    func preferencesChanged()
-}
-
 class GlobalPreferences: Identifiable, Codable{
     
     static var shared = GlobalPreferences()

@@ -42,7 +42,7 @@ class LogPool {
     }
     
     var mainDocument: LogFile? {
-        mainWindowController?.logDocument
+        mainWindowController?.logFile
     }
     
     func clearRecentDocuments(_ sender: Any?) {
@@ -51,7 +51,7 @@ class LogPool {
     }
     
     func removeController(controller: LogWindowController){
-        controller.logDocument.releaseLogSource()
+        controller.logFile.releaseLogSource()
         documentWindowControllers.remove(obj: controller)
         if documentWindowControllers.isEmpty{
             NSApplication.shared.terminate(self)
@@ -98,6 +98,10 @@ extension LogPool: LogWindowDelegate{
         }
         else{
             controller.showWindow(nil)
+        }
+        print("launch load")
+        Task(priority: .background){
+            try await document.load()
         }
     }
     

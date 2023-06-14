@@ -31,24 +31,18 @@ class LocalLogFile: LogFile{
         fileHandle = nil
     }
     
-    override func load() async -> Bool {
+    // running on background thread
+    override func load() async throws {
         if FileManager.default.fileExists(atPath: url.path){
-            do{
-                preferences = GlobalPreferences.shared.getDocumentPreferences(url: url)
-                fileHandle = try FileHandle(forReadingFrom: url)
-                Log.debug("start read")
-                if GlobalPreferences.shared.showFullFile, let data = fileHandle?.readDataToEndOfFile(){
-                    appendChunks(data: data)
-                }
-                Log.debug("end read")
-                setEventSource()
-                return true
+            preferences = GlobalPreferences.shared.getDocumentPreferences(url: url)
+            fileHandle = try FileHandle(forReadingFrom: url)
+            Log.debug("start read")
+            if GlobalPreferences.shared.showFullFile, let data = fileHandle?.readDataToEndOfFile(){
+                appendChunks(data: data)
             }
-            catch{
-                Swift.print(error.localizedDescription)
-            }
+            Log.debug("end read")
+            setEventSource()
         }
-        return false
     }
     
     func setEventSource(){
@@ -81,13 +75,16 @@ class LocalLogFile: LogFile{
         eventSource = nil
     }
     
+    // running on background thread
     func processEvent(event: DispatchSource.FileSystemEvent) {
         guard event.contains(.extend) else {
             return
         }
         if let data = fileHandle?.readDataToEndOfFile(){
             appendChunks(data: data)
-            viewController?.updateFromDocument()
+            DispatchQueue.main.async {
+                self.delegate?.logChanged()
+            }
         }
     }
       

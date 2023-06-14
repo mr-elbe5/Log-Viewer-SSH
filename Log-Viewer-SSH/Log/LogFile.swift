@@ -10,19 +10,18 @@
 import Foundation
 import Cocoa
 
-class LogFile: NSObject, PreferencesDelegate{
+protocol LogDelegate{
+    func logChanged()
+    func preferencesChanged()
+}
+
+class LogFile: NSObject{
     
     var preferences =  DocumentPreferences()
     
-    var windowController : LogWindowController? = nil
-    
-    var viewController : LogViewController?{
-        get{
-            windowController?.documentViewController
-        }
-    }
-    
     var chunks = [LogChunk]()
+    
+    var delegate: LogDelegate? = nil
     
     deinit {
         releaseLogSource()
@@ -36,6 +35,9 @@ class LogFile: NSObject, PreferencesDelegate{
         else{
             chunks.append(LogChunk(str))
         }
+        DispatchQueue.main.async {
+            self.delegate?.logChanged()
+        }
     }
     
     func appendChunks(bytes: [UInt8]){
@@ -46,34 +48,28 @@ class LogFile: NSObject, PreferencesDelegate{
         else{
             chunks.append(LogChunk(str))
         }
+        DispatchQueue.main.async {
+            self.delegate?.logChanged()
+        }
     }
     
     func releaseLogSource(){
     }
     
-    func load() async -> Bool{
-        false
+    // running on background thread
+    func load() async throws{
     }
     
     func savePreferences(){
         GlobalPreferences.shared.save()
     }
 
-    func preferencesChanged(){
-        viewController?.reset()
+    func displayPreferencesChanged(){
         for chunk in chunks{
             chunk.displayed = false
         }
-        viewController?.updateFromDocument()
+        delegate?.preferencesChanged()
     }
-
-    func markPatternChanged(){
-        viewController?.reset()
-        for chunk in chunks{
-            chunk.displayed = false
-        }
-    }
-      
 
 }
 
