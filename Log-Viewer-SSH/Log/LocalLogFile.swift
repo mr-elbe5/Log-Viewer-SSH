@@ -12,18 +12,15 @@ import Cocoa
 
 class LocalLogFile: LogFile{
     
-    var url: URL
-    
     var isValid: Bool{
-        !url.path.isEmpty
+        logData.isValid
     }
     
     private var fileHandle: FileHandle? = nil
     private var eventSource: DispatchSourceFileSystemObject? = nil
     
-    init(url: URL){
-        self.url = url
-        super.init()
+    override init(logData: LogData){
+        super.init(logData: logData)
     }
     
     override func releaseLogSource(){
@@ -33,7 +30,7 @@ class LocalLogFile: LogFile{
     
     // running on background thread
     override func load() async throws {
-        if FileManager.default.fileExists(atPath: url.path){
+        if FileManager.default.fileExists(atPath: logData.path), let url = logData.url{
             preferences = GlobalPreferences.shared.getDocumentPreferences(url: url)
             fileHandle = try FileHandle(forReadingFrom: url)
             Log.debug("start read")

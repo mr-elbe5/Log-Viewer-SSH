@@ -27,29 +27,5 @@ extension SSHClient{
         return nil
     }
     
-    static func connectionTest(server: String, port: Int, user: String, password: String, path: String, oncomplete: @escaping (Bool) -> Void) {
-        DispatchQueue.global(qos: .background).async{
-            Task{
-                do{
-                    var result = false
-                    print("starting test")
-                    if let client = try await connect(server: server, port: port, user: user, password: password){
-                        var buffer = try await client.executeCommand("cat " + path)
-                        if let bytes = buffer.readBytes(length: min(10, buffer.readableBytes)), !bytes.isEmpty{
-                            buffer.discardReadBytes()
-                            result = true
-                        }
-                        try await client.close()
-                        print("ready")
-                        oncomplete(result)
-                    }
-                }
-                catch let(err){
-                    print(err)
-                    oncomplete(false)
-                }
-            }
-        }
-    }
 }
     

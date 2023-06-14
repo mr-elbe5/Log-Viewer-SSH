@@ -17,12 +17,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         NSColorPanel.shared.showsAlpha = false
         GlobalPreferences.load()
         GlobalPreferences.shared.save() // if defaults have been used
+        LogHistory.loadHistory()
         createMenu()
         Task{
             await Store.shared.load()
         }
-        if LogPool.shared.documentWindowControllers.isEmpty{
-            LogPool.shared.openRemoteDocument(sender: nil)
+        if LogPool.shared.windowControllers.isEmpty{
+            LogPool.shared.openDocument(sender: nil)
         }
     }
     
@@ -61,7 +62,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let fileMenu = NSMenuItem(title: "File", action: nil, keyEquivalent: "")
         fileMenu.submenu = NSMenu(title: "File")
         fileMenu.submenu?.addItem(withTitle: "Open Log File...", action: #selector(openLogFile), keyEquivalent: "")
-        fileMenu.submenu?.addItem(withTitle: "Open Remote Log File...", action: #selector(openRemoteLogFile), keyEquivalent: "")
         fileMenu.submenu?.addItem(NSMenuItem.separator())
         fileMenu.submenu?.addItem(withTitle: "Close", action: #selector(closeFile), keyEquivalent: "w")
         
@@ -111,12 +111,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         LogPool.shared.openDocument(sender: nil)
     }
     
-    @objc func openRemoteLogFile() {
-        LogPool.shared.openRemoteDocument(sender: nil)
-    }
-    
     @objc func closeFile() {
-        
+        LogPool.shared.mainWindow?.close()
     }
     
     @objc func openHelp() {

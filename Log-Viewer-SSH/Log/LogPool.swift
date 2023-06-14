@@ -24,15 +24,15 @@ class LogPool {
     
     static var shared = LogPool()
     
-    var documentWindowControllers = Array<LogWindowController>()
+    var windowControllers = Array<LogWindowController>()
     
     var mainWindowController: LogWindowController? {
-        if documentWindowControllers.isEmpty{
+        if windowControllers.isEmpty{
             return nil
         }
-        var controller = documentWindowControllers.first { $0.window?.isMainWindow ?? false}
+        var controller = windowControllers.first { $0.window?.isMainWindow ?? false}
         if controller == nil{
-            controller = documentWindowControllers.first
+            controller = windowControllers.first
         }
         return controller
     }
@@ -52,14 +52,14 @@ class LogPool {
     
     func removeController(controller: LogWindowController){
         controller.logFile.releaseLogSource()
-        documentWindowControllers.remove(obj: controller)
-        if documentWindowControllers.isEmpty{
+        windowControllers.remove(obj: controller)
+        if windowControllers.isEmpty{
             NSApplication.shared.terminate(self)
         }
     }
     
     func removeController(forWindow: NSWindow){
-        for controller in documentWindowControllers{
+        for controller in windowControllers{
             if controller.window == forWindow{
                 removeController(controller: controller)
                 break
@@ -71,22 +71,29 @@ class LogPool {
 
 extension LogPool: LogWindowDelegate{
     
-    func openDocument(sender: LogWindowController?) {
+    /*func openDocument(sender: LogWindowController?) {
         let panel = NSOpenPanel()
         panel.allowsMultipleSelection = false
         panel.canChooseFiles = true
         panel.canChooseDirectories = false
         if NSApp.runModal(for: panel) == .OK, let url = panel.urls.first{
-            let document = LocalLogFile(url: url)
-            addController(for: document, sender: sender)
+            
         }
-    }
+    }*/
     
-    func openRemoteDocument(sender: LogWindowController?) {
-        let dialog = OpenRemoteLogDialog()
+    func openDocument(sender: LogWindowController?) {
+        let dialog = OpenLogDialog()
         if NSApp.runModal(for: dialog.window!) == .OK{
-            let document = RemoteLogFile(server: dialog.sshServer, port: dialog.sshPort, user: dialog.sshUser, password: dialog.sshPassword, path: dialog.path)
-            addController(for: document, sender: sender)
+            if dialog.logData.isLocal{
+                let document = LocalLogFile(logData: dialog.logData)
+                addController(for: document, sender: sender)
+                LogHistory.shared.addData(document.logData)
+            }
+            else{
+                let document = RemoteLogFile(logData: dialog.logData)
+                addController(for: document, sender: sender)
+                LogHistory.shared.addData(document.logData)
+            }
         }
     }
     
@@ -112,7 +119,7 @@ extension LogPool: LogWindowDelegate{
             guard let window = notification.object as? NSWindow else { return }
             self.removeController(forWindow: window)
         }
-        documentWindowControllers.append(controller)
+        windowControllers.append(controller)
     }
     
     func newWindowForTab(from: LogWindowController) {
@@ -121,10 +128,11 @@ extension LogPool: LogWindowDelegate{
         panel.canChooseFiles = true
         panel.canChooseDirectories = false
         if NSApp.runModal(for: panel) == .OK, let url = panel.urls.first{
-            let document = LocalLogFile(url: url)
+            let document = LocalLogFile(logData: LogData(path: url.path))
             let controller = LogWindowController(document: document)
             registerController(controller: controller)
             from.window!.addTabbedWindow(controller.window!, ordered: .above)
+            LogHistory.shared.addData(document.logData)
         }
     }
     

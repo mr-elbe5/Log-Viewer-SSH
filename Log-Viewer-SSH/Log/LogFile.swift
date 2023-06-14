@@ -19,9 +19,16 @@ class LogFile: NSObject{
     
     var preferences =  DocumentPreferences()
     
+    var logData: LogData
+    
     var chunks = [LogChunk]()
     
     var delegate: LogDelegate? = nil
+    
+    init(logData: LogData){
+        self.logData = logData
+        super.init()
+    }
     
     deinit {
         releaseLogSource()

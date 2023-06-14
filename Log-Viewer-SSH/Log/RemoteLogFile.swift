@@ -13,31 +13,20 @@ import Citadel
 
 class RemoteLogFile: LogFile{
     
-    var sshServer: String
-    var sshPort: Int
-    var sshUser: String
-    var sshPassword: String
-    var path: String
-    
     var isValid: Bool{
-        !sshServer.isEmpty && !sshUser.isEmpty && !sshPassword.isEmpty && !path.isEmpty
+        logData.isValidRemote
     }
     
     var client: SSHClient? = nil
     
-    init(server: String, port: Int = 22, user: String, password: String, path: String){
-        self.sshServer = server
-        self.sshPort = port
-        self.sshUser = user
-        self.sshPassword = password
-        self.path = path
-        super.init()
+    override init(logData: LogData){
+        super.init(logData: logData)
     }
     
     // running on background thread
     override func load() async throws{
-        if let client = try await SSHClient.connect(server: self.sshServer, port: self.sshPort, user: self.sshUser, password: self.sshPassword){
-            let streams = try await client.executeCommandStream("tail  -f " + path)
+        if let client = try await SSHClient.connect(server: self.logData.sshServer, port: self.logData.sshPort, user: self.logData.sshUser, password: self.logData.sshPassword){
+            let streams = try await client.executeCommandStream("tail  -f " + logData.path)
             var asyncStreams = streams.makeAsyncIterator()
             while let blob = try await asyncStreams.next() {
                 switch blob {
