@@ -48,7 +48,7 @@ class LogHistory: NSObject, Codable {
     }
     
     func addData(_ data: LogData){
-        if !logHistory.contains(data){
+        if !logHistory.contains(where: { $0 == data}){
             logHistory.append(data)
             save()
         }

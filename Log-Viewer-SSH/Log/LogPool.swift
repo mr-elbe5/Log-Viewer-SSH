@@ -98,7 +98,6 @@ extension LogPool: LogWindowDelegate{
         else{
             controller.showWindow(nil)
         }
-        print("launch load")
         Task(priority: .background){
             try await document.load()
         }

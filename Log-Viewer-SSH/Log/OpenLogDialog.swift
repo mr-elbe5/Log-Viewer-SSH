@@ -103,14 +103,14 @@ class OpenLogViewController: ViewController {
         grid.addLabeledRow(label: "Password:", views: [passwordField])
         grid.addLabeledRow(label: "Path:", views: [pathField])
         
-        let testRemoteButton = NSButton(title: "Test remote", target: self, action: #selector(testRemote))
+        let testRemoteButton = NSButton(title: "Test remote file", target: self, action: #selector(testRemote))
         view.addSubview(testRemoteButton)
         testRemoteButton.setAnchors()
             .top(grid.bottomAnchor, inset: 2*Insets.defaultInset)
             .trailing(view.centerXAnchor, inset: 2*Insets.defaultInset)
         testRemoteButton.refusesFirstResponder = true
         
-        let openRemoteButton = NSButton(title: "Open remote", target: self, action: #selector(openRemote))
+        let openRemoteButton = NSButton(title: "Open remote file", target: self, action: #selector(openRemote))
         view.addSubview(openRemoteButton)
         openRemoteButton.setAnchors()
             .top(grid.bottomAnchor, inset: 2*Insets.defaultInset)
@@ -119,11 +119,13 @@ class OpenLogViewController: ViewController {
         openRemoteButton.isEnabled = false
         self.openButton = openRemoteButton
         
-        let openLocalButton = NSButton(title: "Open local...", target: self, action: #selector(openLocal))
+        let openLocalButton = NSButton(title: "Open local file...", target: self, action: #selector(openLocal))
         view.addSubview(openLocalButton)
-        openLocalButton.placeBelow(anchor: openRemoteButton.bottomAnchor, insets: Insets.doubleInsets)
+        openLocalButton.setAnchors()
+            .top(testRemoteButton.bottomAnchor, inset: 2*Insets.defaultInset)
+            .centerX(view.centerXAnchor)
+            .bottom(view.bottomAnchor, inset: 2*Insets.defaultInset)
         openLocalButton.refusesFirstResponder = true
-        openLocalButton.bottom(view.bottomAnchor, inset: 2*Insets.defaultInset)
     }
     
     func readValues(){
