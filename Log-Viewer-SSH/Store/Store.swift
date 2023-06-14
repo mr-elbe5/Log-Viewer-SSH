@@ -16,7 +16,7 @@ protocol StoreDelegate{
 
 class Store {
     
-    static var productIdentifiers = ["logviewerCoffeeTip", "logviewerLargeCoffeeTip", "logviewerLunchTip", "logviewerDinnerTip"]
+    static var productIdentifiers = ["logviewersshCoffeeTip", "logviewersshLargeCoffeeTip", "logviewersshLunchTip", "logviewersshDinnerTip"]
     
     static var shared = Store()
     

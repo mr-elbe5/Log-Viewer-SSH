@@ -71,16 +71,6 @@ class LogPool {
 
 extension LogPool: LogWindowDelegate{
     
-    /*func openDocument(sender: LogWindowController?) {
-        let panel = NSOpenPanel()
-        panel.allowsMultipleSelection = false
-        panel.canChooseFiles = true
-        panel.canChooseDirectories = false
-        if NSApp.runModal(for: panel) == .OK, let url = panel.urls.first{
-            
-        }
-    }*/
-    
     func openDocument(sender: LogWindowController?) {
         let dialog = OpenLogDialog()
         if NSApp.runModal(for: dialog.window!) == .OK{
@@ -93,6 +83,9 @@ extension LogPool: LogWindowDelegate{
                 addController(for: document, sender: sender)
                 LogHistory.shared.addData(document.logData)
             }
+        }
+        else if windowControllers.isEmpty{
+            NSApplication.shared.terminate(self)
         }
     }
     
