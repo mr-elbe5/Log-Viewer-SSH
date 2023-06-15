@@ -36,7 +36,7 @@ class LogData: NSObject, Codable {
     }
     
     var url: URL?{
-        URL(filePath: path)
+        URL(fileURLWithPath: path, isDirectory: false)
     }
     
     var isValid: Bool{
