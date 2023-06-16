@@ -16,6 +16,7 @@ class GlobalPreferences: Identifiable, Codable{
     static var fontSizes = [10, 12, 14, 16, 18, 20, 24]
     static var numPatterns : Int = 5
     static var defaultMaxLines = 1000
+    static var defaultMinRemoteLines = 10
     
     static var defaultTextColorSet : [CodableColor] = [
         CodableColor(red: 0, green: 0, blue: 0),
@@ -52,31 +53,37 @@ class GlobalPreferences: Identifiable, Codable{
     enum CodingKeys: String, CodingKey {
         case rememberWindowFrame
         case useTabs
-        case showFullFile
         case fontSize
         case showUnmarkedGray
         case caseInsensitive
         case textColors
         case backgroundColors
-        case documentPreferences
+        case minRemoteLines
         case maxLines
     }
     
     var rememberWindowFrame = true
     var useTabs = true
-    var showFullFile = true
     var fontSize = 14
     var showUnmarkedGray = true
     var caseInsensitive = true
     var textColors : [CodableColor] = isDarkMode ? darkmodeTextColorSet : defaultTextColorSet
     var backgroundColors : [CodableColor] = isDarkMode ? darkmodeBackgroundColorSet : defaultBackgroundColorSet
     var documentPreferences = [URL: DocumentPreferences]()
+    var minRemoteLines = GlobalPreferences.defaultMaxLines
     var maxLines = GlobalPreferences.defaultMaxLines
 
     static var isDarkMode : Bool{
         get{
             UserDefaults.standard.string(forKey: "AppleInterfaceStyle") == "Dark"
         }
+    }
+    
+    var initialRemoteLines: Int{
+        if maxLines == 0{
+            return max(GlobalPreferences.defaultMinRemoteLines, minRemoteLines)
+        }
+        return max(minRemoteLines, maxLines)
     }
 
     init(){
@@ -86,13 +93,12 @@ class GlobalPreferences: Identifiable, Codable{
         let values = try decoder.container(keyedBy: CodingKeys.self)
         rememberWindowFrame = try values.decodeIfPresent(Bool.self, forKey: .rememberWindowFrame) ?? true
         useTabs = try values.decodeIfPresent(Bool.self, forKey: .useTabs) ?? true
-        showFullFile = try values.decodeIfPresent(Bool.self, forKey: .showFullFile) ?? true
         fontSize = try values.decodeIfPresent(Int.self, forKey: .fontSize) ?? 14
         showUnmarkedGray = try values.decodeIfPresent(Bool.self, forKey: .showUnmarkedGray) ?? true
         caseInsensitive = try values.decodeIfPresent(Bool.self, forKey: .caseInsensitive) ?? true
         textColors = try values.decodeIfPresent([CodableColor].self, forKey: .textColors) ?? (GlobalPreferences.isDarkMode ? GlobalPreferences.darkmodeTextColorSet : GlobalPreferences.defaultTextColorSet)
         backgroundColors = try values.decodeIfPresent([CodableColor].self, forKey: .backgroundColors) ?? (GlobalPreferences.isDarkMode ? GlobalPreferences.darkmodeBackgroundColorSet : GlobalPreferences.defaultBackgroundColorSet)
-        documentPreferences = try values.decodeIfPresent([URL: DocumentPreferences].self, forKey: .documentPreferences) ?? [URL: DocumentPreferences]()
+        minRemoteLines = try values.decodeIfPresent(Int.self, forKey: .minRemoteLines) ?? GlobalPreferences.defaultMaxLines
         maxLines = try values.decodeIfPresent(Int.self, forKey: .maxLines) ?? GlobalPreferences.defaultMaxLines
         save()
     }
@@ -101,25 +107,23 @@ class GlobalPreferences: Identifiable, Codable{
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(rememberWindowFrame, forKey: .rememberWindowFrame)
         try container.encode(useTabs, forKey: .useTabs)
-        try container.encode(showFullFile, forKey: .showFullFile)
         try container.encode(fontSize, forKey: .fontSize)
         try container.encode(showUnmarkedGray, forKey: .showUnmarkedGray)
         try container.encode(caseInsensitive, forKey: .caseInsensitive)
         try container.encode(textColors, forKey: .textColors)
         try container.encode(backgroundColors, forKey: .backgroundColors)
-        try container.encode(documentPreferences, forKey: .documentPreferences)
+        try container.encode(minRemoteLines, forKey: .minRemoteLines)
         try container.encode(maxLines, forKey: .maxLines)
-        
     }
     
     func resetGlobalSettings(){
         rememberWindowFrame = true
         useTabs = true
-        showFullFile = true
         fontSize = 14
         showUnmarkedGray = false
         caseInsensitive = true
         maxLines = 0
+        minRemoteLines = GlobalPreferences.defaultMaxLines
         textColors = GlobalPreferences.isDarkMode ? GlobalPreferences.darkmodeTextColorSet : GlobalPreferences.defaultTextColorSet
         backgroundColors = GlobalPreferences.isDarkMode ? GlobalPreferences.darkmodeBackgroundColorSet : GlobalPreferences.defaultBackgroundColorSet
     }

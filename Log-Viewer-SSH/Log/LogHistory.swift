@@ -26,7 +26,7 @@ class LogHistory: NSObject, Codable {
     }
     
     enum CodingKeys: String, CodingKey {
-        case frameRect
+        case id
         case logHistory
     }
     
@@ -51,6 +51,12 @@ class LogHistory: NSObject, Codable {
         if !logHistory.contains(where: { $0 == data}){
             logHistory.append(data)
             save()
+        }
+    }
+    
+    func updateDataPreferences(from data: LogData){
+        if let log = logHistory.first(where: { $0 == data}){
+            log.updatePreferences(from: data)
         }
     }
     

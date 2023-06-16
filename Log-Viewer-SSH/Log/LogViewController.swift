@@ -16,11 +16,11 @@ class LogViewController: ViewController {
 
     var defaultSize = NSMakeSize(900, 600)
     
-    var logFile : LogFile
+    var logFile : LogDocument
     
     var follow = true
     
-    init(logFile: LogFile) {
+    init(logFile: LogDocument) {
         self.logFile = logFile
         super.init()
         view.frame = CGRect(x: 0, y: 0, width: defaultSize.width, height: defaultSize.height)
@@ -73,7 +73,6 @@ class LogViewController: ViewController {
     }
     
     func appendText(string: String) {
-        Log.debug("start append text")
         let prefs = logFile.preferences
         let font : NSFont = NSFont.monospacedSystemFont(ofSize: CGFloat(GlobalPreferences.shared.fontSize), weight: .medium)
         if logFile.preferences.hasColorCoding{
@@ -83,7 +82,6 @@ class LogViewController: ViewController {
             appendDefaultText(string, font : font)
         }
         textView.scrollToEndOfDocument(nil)
-        Log.debug("end append text")
     }
     
     func clear(){

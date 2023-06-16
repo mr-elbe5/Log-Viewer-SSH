@@ -29,7 +29,7 @@ class LogWindowController: NSWindowController {
 
     var delegate : LogWindowDelegate? = nil
     
-    var logFile : LogFile
+    var logFile : LogDocument
     
     var logViewController : LogViewController {
         get{
@@ -37,7 +37,7 @@ class LogWindowController: NSWindowController {
         }
     }
     
-    init(document: LogFile){
+    init(document: LogDocument){
         logFile = document
         let window = NSWindow(contentRect: LogPool.defaultRect, styleMask: [.titled, .closable, .miniaturizable, .resizable], backing: .buffered, defer: true)
         window.title = "Log-Viewer"

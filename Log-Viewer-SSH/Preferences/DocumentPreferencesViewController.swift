@@ -12,7 +12,7 @@ import Cocoa
 
 class DocumentPreferencesViewController:ViewController {
     
-    var logDocument : LogFile? = nil
+    var logDocument : LogDocument? = nil
     
     var fullLineColoringField = NSButton(checkboxWithTitle: "On", target: nil, action: nil)
     var skipUnmarkedField = NSButton(checkboxWithTitle: "Skip line", target: nil, action: nil)
@@ -31,13 +31,14 @@ class DocumentPreferencesViewController:ViewController {
     
     override func loadView() {
         view = NSView()
-        view.frame = CGRect(x: 0, y: 0, width: 500, height: 310)
+        view.frame = CGRect(x: 0, y: 0, width: 500, height: 260)
         
         if let prefs = logDocument?.preferences{
             fullLineColoringField.state = prefs.fullLineColoring ? .on : .off
             for i in 0..<GlobalPreferences.numPatterns{
                 patternFields[i].stringValue = prefs.patterns[i]
             }
+            skipUnmarkedField.state = prefs.skipUnmarked ? .on : .off
         }
         setColors()
         

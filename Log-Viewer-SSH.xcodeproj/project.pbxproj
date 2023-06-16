@@ -37,14 +37,12 @@
 		4EBBE4AD2A3851AE0063381E /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EBBE4AA2A3851AE0063381E /* Log.swift */; };
 		4EBBE4AE2A3851AE0063381E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EBBE4AB2A3851AE0063381E /* AppDelegate.swift */; };
 		4EBBE4AF2A3851AE0063381E /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EBBE4AC2A3851AE0063381E /* main.swift */; };
-		4EBBE4B82A38520A0063381E /* LogFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EBBE4B02A38520A0063381E /* LogFile.swift */; };
-		4EBBE4B92A38520A0063381E /* LocalLogFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EBBE4B12A38520A0063381E /* LocalLogFile.swift */; };
+		4EBBE4B82A38520A0063381E /* LogDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EBBE4B02A38520A0063381E /* LogDocument.swift */; };
 		4EBBE4BA2A38520A0063381E /* LogWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EBBE4B22A38520A0063381E /* LogWindowController.swift */; };
 		4EBBE4BB2A38520A0063381E /* LogWindowController+Toolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EBBE4B32A38520A0063381E /* LogWindowController+Toolbar.swift */; };
 		4EBBE4BC2A38520A0063381E /* LogPool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EBBE4B42A38520A0063381E /* LogPool.swift */; };
 		4EBBE4BD2A38520A0063381E /* LogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EBBE4B52A38520A0063381E /* LogViewController.swift */; };
 		4EBBE4BE2A38520A0063381E /* OpenLogDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EBBE4B62A38520A0063381E /* OpenLogDialog.swift */; };
-		4EBBE4BF2A38520A0063381E /* RemoteLogFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EBBE4B72A38520A0063381E /* RemoteLogFile.swift */; };
 		4EBBE4C62A38521E0063381E /* DocumentPreferencesWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EBBE4C02A38521E0063381E /* DocumentPreferencesWindowController.swift */; };
 		4EBBE4C72A38521E0063381E /* DocumentPreferencesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EBBE4C12A38521E0063381E /* DocumentPreferencesViewController.swift */; };
 		4EBBE4C82A38521E0063381E /* DocumentPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EBBE4C22A38521E0063381E /* DocumentPreferences.swift */; };
@@ -92,14 +90,12 @@
 		4EBBE4AA2A3851AE0063381E /* Log.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
 		4EBBE4AB2A3851AE0063381E /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		4EBBE4AC2A3851AE0063381E /* main.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
-		4EBBE4B02A38520A0063381E /* LogFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogFile.swift; sourceTree = "<group>"; };
-		4EBBE4B12A38520A0063381E /* LocalLogFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalLogFile.swift; sourceTree = "<group>"; };
+		4EBBE4B02A38520A0063381E /* LogDocument.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogDocument.swift; sourceTree = "<group>"; };
 		4EBBE4B22A38520A0063381E /* LogWindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogWindowController.swift; sourceTree = "<group>"; };
 		4EBBE4B32A38520A0063381E /* LogWindowController+Toolbar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "LogWindowController+Toolbar.swift"; sourceTree = "<group>"; };
 		4EBBE4B42A38520A0063381E /* LogPool.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogPool.swift; sourceTree = "<group>"; };
 		4EBBE4B52A38520A0063381E /* LogViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogViewController.swift; sourceTree = "<group>"; };
 		4EBBE4B62A38520A0063381E /* OpenLogDialog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OpenLogDialog.swift; sourceTree = "<group>"; };
-		4EBBE4B72A38520A0063381E /* RemoteLogFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RemoteLogFile.swift; sourceTree = "<group>"; };
 		4EBBE4C02A38521E0063381E /* DocumentPreferencesWindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentPreferencesWindowController.swift; sourceTree = "<group>"; };
 		4EBBE4C12A38521E0063381E /* DocumentPreferencesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentPreferencesViewController.swift; sourceTree = "<group>"; };
 		4EBBE4C22A38521E0063381E /* DocumentPreferences.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DocumentPreferences.swift; sourceTree = "<group>"; };
@@ -191,14 +187,12 @@
 		4EBBE4682A384FB80063381E /* Log */ = {
 			isa = PBXGroup;
 			children = (
-				4EBBE4B12A38520A0063381E /* LocalLogFile.swift */,
-				4EBBE4B02A38520A0063381E /* LogFile.swift */,
+				4EBBE4B02A38520A0063381E /* LogDocument.swift */,
 				4EBBE4B42A38520A0063381E /* LogPool.swift */,
 				4EBBE4B52A38520A0063381E /* LogViewController.swift */,
 				4EBBE4B22A38520A0063381E /* LogWindowController.swift */,
 				4EBBE4B32A38520A0063381E /* LogWindowController+Toolbar.swift */,
 				4EBBE4B62A38520A0063381E /* OpenLogDialog.swift */,
-				4EBBE4B72A38520A0063381E /* RemoteLogFile.swift */,
 				4EBBE4D82A39C50B0063381E /* LogData.swift */,
 				4EBBE4DA2A39C5B60063381E /* LogHistory.swift */,
 			);
@@ -331,7 +325,7 @@
 				4EBBE4AE2A3851AE0063381E /* AppDelegate.swift in Sources */,
 				4EBBE4992A38518A0063381E /* NSView.swift in Sources */,
 				4EBBE4CA2A38521E0063381E /* GlobalPreferencesViewController.swift in Sources */,
-				4EBBE4B82A38520A0063381E /* LogFile.swift in Sources */,
+				4EBBE4B82A38520A0063381E /* LogDocument.swift in Sources */,
 				4EBBE4C92A38521E0063381E /* GlobalPreferences.swift in Sources */,
 				4EBBE4C72A38521E0063381E /* DocumentPreferencesViewController.swift in Sources */,
 				4EBBE4A82A3851980063381E /* Dictionary.swift in Sources */,
@@ -352,7 +346,6 @@
 				4EBBE47E2A3851770063381E /* StringProtocol.swift in Sources */,
 				4EBBE47D2A3851770063381E /* String.swift in Sources */,
 				4EBBE4902A38518A0063381E /* WindowController.swift in Sources */,
-				4EBBE4BF2A38520A0063381E /* RemoteLogFile.swift in Sources */,
 				4EBBE4CE2A38522D0063381E /* HelpWindowController.swift in Sources */,
 				4EBBE4972A38518A0063381E /* NSTextView.swift in Sources */,
 				4EBBE4A52A3851980063381E /* Date.swift in Sources */,
@@ -365,7 +358,6 @@
 				4EBBE4A72A3851980063381E /* Codable.swift in Sources */,
 				4EBBE4AF2A3851AE0063381E /* main.swift in Sources */,
 				4EBBE4D72A3883550063381E /* SSHClient.swift in Sources */,
-				4EBBE4B92A38520A0063381E /* LocalLogFile.swift in Sources */,
 				4EBBE49D2A38518A0063381E /* NSMenuItem.swift in Sources */,
 				4EBBE4762A3851680063381E /* StoreWindowController.swift in Sources */,
 				4EBBE4DB2A39C5B60063381E /* LogHistory.swift in Sources */,

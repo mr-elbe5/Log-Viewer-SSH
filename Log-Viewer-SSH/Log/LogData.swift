@@ -17,12 +17,12 @@ class LogData: NSObject, Codable {
         }
     
     enum CodingKeys: String, CodingKey {
-        case type
         case server
         case port
         case user
         case password
         case path
+        case preferences
     }
     
     var sshServer: String = ""
@@ -30,6 +30,7 @@ class LogData: NSObject, Codable {
     var sshUser: String = ""
     var sshPassword: String = ""
     var path: String
+    var preferences : DocumentPreferences
     
     var isLocal: Bool{
         sshServer.isEmpty
@@ -40,10 +41,6 @@ class LogData: NSObject, Codable {
     }
     
     var isValid: Bool{
-        !path.isEmpty
-    }
-    
-    var isValidRemote: Bool{
         !sshServer.isEmpty && !sshUser.isEmpty && !sshPassword.isEmpty && !path.isEmpty
     }
     
@@ -55,25 +52,17 @@ class LogData: NSObject, Codable {
     
     override init(){
         self.path = ""
+        preferences = DocumentPreferences()
         super.init()
     }
     
-    init(path: String){
-        self.path = path
-        super.init()
-    }
-    
-    init(url: URL){
-        self.path = url.path
-        super.init()
-    }
-    
-    init(server: String, port: Int = 22, user: String, password: String, path: String){
+    init(server: String, port: Int = 22, user: String, password: String, path: String, preferences: DocumentPreferences){
         self.sshServer = server
         self.sshPort = port
         self.sshUser = user
         self.sshPassword = password
         self.path = path
+        self.preferences = preferences
         super.init()
     }
     
@@ -84,6 +73,7 @@ class LogData: NSObject, Codable {
         sshUser = try values.decodeIfPresent(String.self, forKey: .user) ?? ""
         sshPassword = try values.decodeIfPresent(String.self, forKey: .password) ?? ""
         path = try values.decodeIfPresent(String.self, forKey: .path) ?? ""
+        preferences = try values.decodeIfPresent(DocumentPreferences.self, forKey: .preferences) ??  DocumentPreferences()
     }
     
     func encode(to encoder: Encoder) throws {
@@ -93,6 +83,7 @@ class LogData: NSObject, Codable {
         try container.encode(sshUser, forKey: .user)
         try container.encode(sshPassword, forKey: .password)
         try container.encode(path, forKey: .path)
+        try container.encode(preferences, forKey: .preferences)
     }
     
     func reset(){
@@ -101,6 +92,11 @@ class LogData: NSObject, Codable {
         sshUser = ""
         sshPassword = ""
         path = ""
+        preferences = DocumentPreferences()
+    }
+    
+    func updatePreferences(from data: LogData){
+        preferences = data.preferences
     }
     
     func remoteConnectionTest(oncomplete: @escaping (Bool) -> Void) {
@@ -108,15 +104,15 @@ class LogData: NSObject, Codable {
             Task{
                 do{
                     var result = false
-                    print("starting test")
+                    print("starting access test")
                     if let client = try await SSHClient.connect(server: self.sshServer, port: self.sshPort, user: self.sshUser, password: self.sshPassword){
-                        var buffer = try await client.executeCommand("cat " + self.path)
+                        var buffer = try await client.executeCommand("tail " + self.path)
                         if let bytes = buffer.readBytes(length: min(10, buffer.readableBytes)), !bytes.isEmpty{
                             buffer.discardReadBytes()
                             result = true
                         }
                         try await client.close()
-                        print("ready")
+                        print("access test successful")
                         oncomplete(result)
                     }
                 }

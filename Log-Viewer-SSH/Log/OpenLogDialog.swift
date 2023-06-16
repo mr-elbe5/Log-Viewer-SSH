@@ -50,6 +50,8 @@ class OpenLogViewController: ViewController {
     var passwordField = NSSecureTextField(string: "")
     var pathField = NSTextField(string: "")
     
+    var documentPreferences = DocumentPreferences()
+    
     var stackView = NSStackView()
     
     var openButton: NSButton? = nil
@@ -103,37 +105,43 @@ class OpenLogViewController: ViewController {
         grid.addLabeledRow(label: "Password:", views: [passwordField])
         grid.addLabeledRow(label: "Path:", views: [pathField])
         
-        let testRemoteButton = NSButton(title: "Test remote file", target: self, action: #selector(testRemote))
+        let testRemoteButton = NSButton(title: "Test access", target: self, action: #selector(test))
         view.addSubview(testRemoteButton)
         testRemoteButton.setAnchors()
             .top(grid.bottomAnchor, inset: 2*Insets.defaultInset)
             .trailing(view.centerXAnchor, inset: 2*Insets.defaultInset)
+            .bottom(view.bottomAnchor, inset: 2*Insets.defaultInset)
         testRemoteButton.refusesFirstResponder = true
         
-        let openRemoteButton = NSButton(title: "Open remote file", target: self, action: #selector(openRemote))
+        let openRemoteButton = NSButton(title: "Open", target: self, action: #selector(open))
         view.addSubview(openRemoteButton)
         openRemoteButton.setAnchors()
             .top(grid.bottomAnchor, inset: 2*Insets.defaultInset)
             .leading(view.centerXAnchor, inset: 2*Insets.defaultInset)
+            .bottom(view.bottomAnchor, inset: 2*Insets.defaultInset)
         openRemoteButton.refusesFirstResponder = true
         openRemoteButton.isEnabled = false
         self.openButton = openRemoteButton
         
-        let openLocalButton = NSButton(title: "Open local file...", target: self, action: #selector(openLocal))
-        view.addSubview(openLocalButton)
-        openLocalButton.setAnchors()
-            .top(testRemoteButton.bottomAnchor, inset: 2*Insets.defaultInset)
-            .centerX(view.centerXAnchor)
-            .bottom(view.bottomAnchor, inset: 2*Insets.defaultInset)
-        openLocalButton.refusesFirstResponder = true
     }
     
     func readValues(){
+        if serverField.stringValue != logData.sshServer || pathField.stringValue != logData.path{
+            logData.preferences = DocumentPreferences()
+        }
         logData.sshServer = serverField.stringValue
         logData.sshPort = Int(portField.intValue)
         logData.sshUser = userField.stringValue
         logData.sshPassword = passwordField.stringValue
         logData.path = pathField.stringValue
+    }
+    
+    func fillFields(){
+        serverField.stringValue  = logData.sshServer
+        portField.intValue = Int32(logData.sshPort)
+        userField.stringValue = logData.sshUser
+        passwordField.stringValue = logData.sshPassword
+        pathField.stringValue = logData.path
     }
     
     @objc func clearHistory(){
@@ -147,17 +155,14 @@ class OpenLogViewController: ViewController {
     
     @objc func openRecent(sender: AnyObject?){
         if let button = sender as? RecentLogButton{
-            serverField.stringValue = button.logData.sshServer
-            portField.stringValue = String(button.logData.sshPort)
-            userField.stringValue = button.logData.sshUser
-            passwordField.stringValue = button.logData.sshPassword
-            pathField.stringValue = button.logData.path
+            logData = button.logData
+            fillFields()
         }
     }
     
-    @objc func testRemote(){
+    @objc func test(){
         readValues()
-        if !logData.isValidRemote{
+        if !logData.isValid{
             return
         }
         logData.remoteConnectionTest(){ result in
@@ -167,20 +172,8 @@ class OpenLogViewController: ViewController {
         }
     }
     
-    @objc func openRemote(){
-        NSApp.stopModal(withCode: logData.isValidRemote ? .OK : .cancel)
-    }
-    
-    @objc func openLocal(){
-        let panel = NSOpenPanel()
-        panel.allowsMultipleSelection = false
-        panel.canChooseFiles = true
-        panel.canChooseDirectories = false
-        if NSApp.runModal(for: panel) == .OK, let url = panel.urls.first{
-            self.logData.reset()
-            self.logData.path = url.path
-            view.window?.close()
-        }
+    @objc func open(){
+        NSApp.stopModal(withCode: logData.isValid ? .OK : .cancel)
     }
     
 }

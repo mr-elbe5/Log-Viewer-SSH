@@ -9,21 +9,35 @@
 
 import Foundation
 import Cocoa
+import Citadel
 
 protocol LogDelegate{
     func logChanged()
     func preferencesChanged()
 }
 
-class LogFile: NSObject{
-    
-    var preferences =  DocumentPreferences()
+class LogDocument: NSObject{
     
     var logData: LogData
     
     var chunks = [LogChunk]()
     
     var delegate: LogDelegate? = nil
+    
+    var preferences: DocumentPreferences{
+        get{
+            logData.preferences
+        }
+        set{
+            logData.preferences = newValue
+        }
+    }
+    
+    var isValid: Bool{
+        logData.isValid
+    }
+    
+    var client: SSHClient? = nil
     
     init(logData: LogData){
         self.logData = logData
@@ -34,10 +48,10 @@ class LogFile: NSObject{
         releaseLogSource()
     }
     
-    func appendChunks(data: Data){
+    func appendChunks(data: Data, maxLines: Int){
         let str = String(data: data, encoding: .utf8) ?? ""
-        if GlobalPreferences.shared.maxLines != 0{
-            chunks.append(LogChunk(str.substr(lines: GlobalPreferences.shared.maxLines)))
+        if maxLines != 0{
+            chunks.append(LogChunk(str.substr(lines: maxLines)))
         }
         else{
             chunks.append(LogChunk(str))
@@ -47,10 +61,11 @@ class LogFile: NSObject{
         }
     }
     
-    func appendChunks(bytes: [UInt8]){
+    func appendChunks(bytes: [UInt8], maxLines: Int = 0){
         let str = String(bytes: bytes, encoding: .utf8) ?? ""
-        if GlobalPreferences.shared.maxLines != 0{
-            chunks.append(LogChunk(str.substr(lines: GlobalPreferences.shared.maxLines)))
+        if maxLines != 0{
+            //Log.debug("adding max lines: \(GlobalPreferences.shared.maxLines)")
+            chunks.append(LogChunk(str.substr(lines: maxLines)))
         }
         else{
             chunks.append(LogChunk(str))
@@ -58,17 +73,39 @@ class LogFile: NSObject{
         DispatchQueue.main.async {
             self.delegate?.logChanged()
         }
-    }
-    
-    func releaseLogSource(){
     }
     
     // running on background thread
     func load() async throws{
+        if let client = try await SSHClient.connect(server: self.logData.sshServer, port: self.logData.sshPort, user: self.logData.sshUser, password: self.logData.sshPassword){
+            let cmd = "tail  -n\(GlobalPreferences.shared.initialRemoteLines) -f "
+            let streams = try await client.executeCommandStream(cmd + logData.path)
+            var asyncStreams = streams.makeAsyncIterator()
+            while let blob = try await asyncStreams.next() {
+                switch blob {
+                case .stdout(let stdout):
+                    if let bytes = stdout.getBytes(at: 0, length: stdout.readableBytes){
+                        self.appendChunks(bytes: bytes)
+                    }
+                case .stderr(let stderr):
+                    if let bytes = stderr.getBytes(at: 0, length: stderr.readableBytes){
+                        print(String(bytes: bytes, encoding: .utf8) ?? "")
+                    }
+                }
+            }
+            self.client = client
+        }
+    }
+    
+    func releaseLogSource(){
+        Task(priority: .background){
+            try await client?.close()
+        }
     }
     
     func savePreferences(){
-        GlobalPreferences.shared.save()
+        LogHistory.shared.updateDataPreferences(from: logData)
+        LogHistory.shared.save()
     }
 
     func displayPreferencesChanged(){
@@ -77,7 +114,7 @@ class LogFile: NSObject{
         }
         delegate?.preferencesChanged()
     }
-
+    
 }
 
 class LogChunk{

@@ -13,7 +13,7 @@ import Cocoa
 class HelpWindowController: NSWindowController, NSWindowDelegate {
 
     init(){
-        let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 400, height: 270), styleMask: [.closable, .miniaturizable, .titled, .resizable], backing: .buffered, defer: false)
+        let window = NSWindow(contentRect: .zero, styleMask: [.closable, .miniaturizable, .titled, .resizable], backing: .buffered, defer: false)
         window.title = "Help"
         super.init(window: window)
         self.window?.delegate = self

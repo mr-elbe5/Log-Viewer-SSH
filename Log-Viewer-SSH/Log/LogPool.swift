@@ -41,7 +41,7 @@ class LogPool {
         mainWindowController?.window
     }
     
-    var mainDocument: LogFile? {
+    var mainDocument: LogDocument? {
         mainWindowController?.logFile
     }
     
@@ -74,26 +74,21 @@ extension LogPool: LogWindowDelegate{
     func openDocument(sender: LogWindowController?) {
         let dialog = OpenLogDialog()
         if NSApp.runModal(for: dialog.window!) == .OK{
-            if dialog.logData.isLocal{
-                let document = LocalLogFile(logData: dialog.logData)
-                addController(for: document, sender: sender)
-            }
-            else{
-                let document = RemoteLogFile(logData: dialog.logData)
-                addController(for: document, sender: sender)
-                LogHistory.shared.addData(document.logData)
-            }
+            let document = LogDocument(logData: dialog.logData)
+            addController(for: document, sender: sender)
+            LogHistory.shared.addData(document.logData)
         }
         else if windowControllers.isEmpty{
             NSApplication.shared.terminate(self)
         }
     }
     
-    func addController(for document: LogFile, sender: LogWindowController?) {
+    func addController(for document: LogDocument, sender: LogWindowController?) {
         let controller = LogWindowController(document: document)
         registerController(controller: controller)
         if GlobalPreferences.shared.useTabs, let sender = sender{
             sender.window!.addTabbedWindow(controller.window!, ordered: .above)
+            controller.window?.makeKeyAndOrderFront(nil)
         }
         else{
             controller.showWindow(nil)
