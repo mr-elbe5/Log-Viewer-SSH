@@ -30,5 +30,13 @@ extension NSAlert{
         alert.addButton(withTitle: "Ok")
         alert.runModal()
     }
+    
+    static func showError(message: String){
+        let alert = NSAlert()
+        alert.alertStyle = .critical
+        alert.messageText = message
+        alert.addButton(withTitle: "Ok")
+        alert.runModal()
+    }
 
 }
