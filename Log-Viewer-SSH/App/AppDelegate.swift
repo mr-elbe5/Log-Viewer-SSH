@@ -1,6 +1,6 @@
 /*
- Log-Viewer
- Copyright (C) 2021 Michael Roennau
+ Log-Viewer-SSH
+ Copyright (C) 2023 Michael Roennau
 
  This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -40,7 +40,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         let appMenu = NSMenuItem(title: "", action: nil, keyEquivalent: "")
         appMenu.submenu = NSMenu(title: "")
-        appMenu.submenu?.addItem(withTitle: "About Log-Viewer", action: #selector(openAbout), keyEquivalent: "n")
+        appMenu.submenu?.addItem(withTitle: "About Log-Viewer-SSH", action: #selector(openAbout), keyEquivalent: "n")
         appMenu.submenu?.addItem(NSMenuItem.separator())
         appMenu.submenu?.addItem(withTitle: "Global Preferences...", action: #selector(openGlobalPreferences), keyEquivalent: "p")
         appMenu.submenu?.addItem(withTitle: "Tip...", action: #selector(openStore), keyEquivalent: "")
@@ -57,7 +57,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.servicesMenu      = appServicesMenu
         appMenu.submenu?.addItem(withTitle: "Services", action: nil, keyEquivalent: "").submenu = appServicesMenu
         appMenu.submenu?.addItem(NSMenuItem.separator())
-        appMenu.submenu?.addItem(withTitle: "Quit Log-Viewer", action: #selector(quitApp), keyEquivalent: "q")
+        appMenu.submenu?.addItem(withTitle: "Quit Log-Viewer-SSH", action: #selector(quitApp), keyEquivalent: "q")
         
         let fileMenu = NSMenuItem(title: "File", action: nil, keyEquivalent: "")
         fileMenu.submenu = NSMenu(title: "File")
@@ -72,7 +72,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         let helpMenu = NSMenuItem(title: "Help", action: nil, keyEquivalent: "")
         helpMenu.submenu = NSMenu(title: "Help")
-        helpMenu.submenu?.addItem(withTitle: "Log-Viewer Help", action: #selector(openHelp), keyEquivalent: "o")
+        helpMenu.submenu?.addItem(withTitle: "Log-Viewer-SSH Help", action: #selector(openHelp), keyEquivalent: "o")
         
         
         mainMenu.addItem(appMenu)
