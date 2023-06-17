@@ -16,6 +16,10 @@ public class OpenLogDialog: NSWindowController, NSWindowDelegate {
         (contentViewController as! OpenLogViewController).logData
     }
     
+    var isTested : Bool{
+        (contentViewController as! OpenLogViewController).isTested
+    }
+    
     init(){
         let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 400, height: 200), styleMask: [.closable, .titled, .resizable], backing: .buffered, defer: false)
         window.title = "Open Remote Log File"
@@ -35,7 +39,7 @@ public class OpenLogDialog: NSWindowController, NSWindowDelegate {
     }
     
     public func windowWillClose(_ notification: Notification) {
-        NSApp.stopModal(withCode: logData.isValid ? .OK : .cancel)
+        NSApp.stopModal(withCode: isTested ? .OK : .cancel)
     }
 
 }
@@ -51,6 +55,8 @@ class OpenLogViewController: ViewController {
     var pathField = NSTextField(string: "")
     
     var documentPreferences = DocumentPreferences()
+    
+    var isTested = false
     
     var stackView = NSStackView()
     
@@ -149,14 +155,16 @@ class OpenLogViewController: ViewController {
     
     @objc func open(){
         readValues()
+        isTested = false
         if !logData.isValid{
             NSAlert.showError(message: "Please fill all fields")
             return
         }
         logData.remoteConnectionTest(){ result in
+            self.isTested = result
             DispatchQueue.main.async {
                 if result{
-                    NSApp.stopModal(withCode: .OK)
+                    self.view.window?.close()
                 }
                 else{
                     NSAlert.showError(message: "Connection could not be established.")
