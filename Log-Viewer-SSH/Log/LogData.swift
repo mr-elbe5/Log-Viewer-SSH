@@ -17,6 +17,7 @@ class LogData: NSObject, Codable {
         }
     
     enum CodingKeys: String, CodingKey {
+        case id
         case server
         case port
         case user
@@ -25,6 +26,7 @@ class LogData: NSObject, Codable {
         case preferences
     }
     
+    var id: String
     var sshServer: String = ""
     var sshPort: Int = 22
     var sshUser: String = ""
@@ -51,12 +53,14 @@ class LogData: NSObject, Codable {
     }
     
     override init(){
+        id = UUID().uuidString
         self.path = ""
         preferences = DocumentPreferences()
         super.init()
     }
     
     init(server: String, port: Int = 22, user: String, password: String, path: String, preferences: DocumentPreferences){
+        id = UUID().uuidString
         self.sshServer = server
         self.sshPort = port
         self.sshUser = user
@@ -68,6 +72,7 @@ class LogData: NSObject, Codable {
     
     required init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
+        id = try values.decodeIfPresent(String.self, forKey: .id) ?? UUID().uuidString
         sshServer = try values.decodeIfPresent(String.self, forKey: .server) ?? ""
         sshPort = try values.decodeIfPresent(Int.self, forKey: .port) ?? 22
         sshUser = try values.decodeIfPresent(String.self, forKey: .user) ?? ""
@@ -78,6 +83,7 @@ class LogData: NSObject, Codable {
     
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
         try container.encode(sshServer, forKey: .server)
         try container.encode(sshPort, forKey: .port)
         try container.encode(sshUser, forKey: .user)

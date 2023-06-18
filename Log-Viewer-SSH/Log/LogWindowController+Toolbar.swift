@@ -218,9 +218,11 @@ extension LogWindowController: NSToolbarDelegate {
     }
     
     @objc func openDocumentPreferences() {
-        let controller = DocumentPreferencesWindowController(log: logFile)
-        controller.centerInWindow(outerWindow: window)
-        NSApp.runModal(for: controller.window!)
+        if let logDocument = logDocument{
+            let controller = DocumentPreferencesWindowController(log: logDocument)
+            controller.centerInWindow(outerWindow: window)
+            NSApp.runModal(for: controller.window!)
+        }
     }
     
     @objc func openStore() {

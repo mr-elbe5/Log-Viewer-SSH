@@ -16,20 +16,26 @@ class LogViewController: ViewController {
 
     var defaultSize = NSMakeSize(900, 600)
     
-    var logFile : LogDocument
+    var logDocument : LogDocument? = nil
     
     var follow = true
     
-    init(logFile: LogDocument) {
-        self.logFile = logFile
+    init(logDocument: LogDocument?) {
+        self.logDocument = logDocument
         super.init()
         view.frame = CGRect(x: 0, y: 0, width: defaultSize.width, height: defaultSize.height)
         view.wantsLayer = true
-        logFile.delegate = self
+        logDocument?.delegate = self
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    func setDocument(logDocument: LogDocument){
+        logDocument.delegate = self
+        self.logDocument = logDocument
+        updateFromDocument()
     }
     
     override func loadView() {
@@ -51,10 +57,12 @@ class LogViewController: ViewController {
         if !follow{
             return
         }
-        for chunk in logFile.chunks{
-            if !chunk.displayed{
-                chunk.displayed = true
-                appendText(string: chunk.string)
+        if let logDocument = logDocument{
+            for chunk in logDocument.chunks{
+                if !chunk.displayed{
+                    chunk.displayed = true
+                    appendText(string: chunk.string)
+                }
             }
         }
     }
@@ -63,25 +71,29 @@ class LogViewController: ViewController {
         let oldFollow = follow
         follow = false;
         reset()
-        for chunk in logFile.chunks{
-            if chunk.displayed{
-                appendText(string: chunk.string)
+        if let logDocument = logDocument{
+            for chunk in logDocument.chunks{
+                if chunk.displayed{
+                    appendText(string: chunk.string)
+                }
             }
+            follow = oldFollow
+            textView.scrollToEndOfDocument(nil)
         }
-        follow = oldFollow
-        textView.scrollToEndOfDocument(nil)
     }
     
     func appendText(string: String) {
-        let prefs = logFile.preferences
-        let font : NSFont = NSFont.monospacedSystemFont(ofSize: CGFloat(GlobalPreferences.shared.fontSize), weight: .medium)
-        if logFile.preferences.hasColorCoding{
-            appendColorMarkedText(string, font : font, preferences: prefs)
+        if let logDocument = logDocument{
+            let prefs = logDocument.preferences
+            let font : NSFont = NSFont.monospacedSystemFont(ofSize: CGFloat(GlobalPreferences.shared.fontSize), weight: .medium)
+            if logDocument.preferences.hasColorCoding{
+                appendColorMarkedText(string, font : font, preferences: prefs)
+            }
+            else{
+                appendDefaultText(string, font : font)
+            }
+            textView.scrollToEndOfDocument(nil)
         }
-        else{
-            appendDefaultText(string, font : font)
-        }
-        textView.scrollToEndOfDocument(nil)
     }
     
     func clear(){
@@ -90,9 +102,11 @@ class LogViewController: ViewController {
     
     func reloadFullFile(){
         reset()
-        for chunk in logFile.chunks{
-            chunk.displayed = true
-            appendText(string: chunk.string)
+        if let logDocument = logDocument{
+            for chunk in logDocument.chunks{
+                chunk.displayed = true
+                appendText(string: chunk.string)
+            }
         }
     }
     
@@ -128,7 +142,7 @@ class LogViewController: ViewController {
             parts.sort{
                 $0.start < $1.start
             }
-            if logFile.preferences.fullLineColoring{
+            if let logDocument = logDocument, logDocument.preferences.fullLineColoring{
                 let part = parts[0]
                 appendColoredText(string, color: part.color, background: part.background, font: font)
                 appendDefaultText("\n", font: font)

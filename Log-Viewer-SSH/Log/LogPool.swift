@@ -37,12 +37,19 @@ class LogPool {
         return controller
     }
     
+    var emptyWindowController: LogWindowController? {
+        if windowControllers.isEmpty{
+            return nil
+        }
+        return windowControllers.first { $0.logDocument == nil}
+    }
+    
     var mainWindow: NSWindow? {
         mainWindowController?.window
     }
     
     var mainDocument: LogDocument? {
-        mainWindowController?.logFile
+        mainWindowController?.logDocument
     }
     
     func clearRecentDocuments(_ sender: Any?) {
@@ -51,7 +58,7 @@ class LogPool {
     }
     
     func removeController(controller: LogWindowController){
-        controller.logFile.releaseLogSource()
+        controller.logDocument?.releaseLogSource()
         windowControllers.remove(obj: controller)
         if windowControllers.isEmpty{
             NSApplication.shared.terminate(self)
@@ -75,7 +82,12 @@ extension LogPool: LogWindowDelegate{
         let dialog = OpenLogDialog()
         if NSApp.runModal(for: dialog.window!) == .OK{
             let document = LogDocument(logData: dialog.logData)
-            addController(for: document, sender: sender)
+            if let controller = emptyWindowController{
+                fillEmptyController(controller: controller, with: document)
+            }
+            else{
+                addController(for: document, sender: sender)
+            }
             LogHistory.shared.addData(document.logData)
         }
         else if windowControllers.isEmpty{
@@ -83,7 +95,14 @@ extension LogPool: LogWindowDelegate{
         }
     }
     
-    func addController(for document: LogDocument, sender: LogWindowController?) {
+    func fillEmptyController(controller: LogWindowController, with document: LogDocument){
+        controller.setDocument(document: document)
+        Task(priority: .background){
+            try await document.load()
+        }
+    }
+    
+    func addController(for document: LogDocument?, sender: LogWindowController?) {
         let controller = LogWindowController(document: document)
         registerController(controller: controller)
         if GlobalPreferences.shared.useTabs, let sender = sender{
@@ -93,8 +112,11 @@ extension LogPool: LogWindowDelegate{
         else{
             controller.showWindow(nil)
         }
-        Task(priority: .background){
-            try await document.load()
+        if let document = document{
+            controller.window?.title = document.logData.displayName
+            Task(priority: .background){
+                try await document.load()
+            }
         }
     }
     

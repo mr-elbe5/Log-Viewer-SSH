@@ -29,34 +29,42 @@ class LogWindowController: NSWindowController {
 
     var delegate : LogWindowDelegate? = nil
     
-    var logFile : LogDocument
-    
     var logViewController : LogViewController {
         get{
             contentViewController as! LogViewController
         }
     }
     
-    init(document: LogDocument){
-        logFile = document
+    var logDocument : LogDocument? {
+        get{
+            logViewController.logDocument
+        }
+    }
+    
+    init(document: LogDocument? = nil){
         let window = NSWindow(contentRect: LogPool.defaultRect, styleMask: [.titled, .closable, .miniaturizable, .resizable], backing: .buffered, defer: true)
         window.title = "Log-Viewer-SSH"
         window.tabbingMode = GlobalPreferences.shared.useTabs ? .preferred : .automatic
         super.init(window: window)
         self.window?.delegate = self
         addToolbar()
-        setupViewController()
-        if GlobalPreferences.shared.rememberWindowFrame{
-            self.window?.setFrameUsingName(logFile.preferences.id)
+        setupViewController(document: document)
+        if GlobalPreferences.shared.rememberWindowFrame, let logDocument = document{
+            self.window?.setFrameUsingName(logDocument.logData.id)
         }
+    }
+    
+    func setDocument(document: LogDocument){
+        window?.title = document.logData.displayName
+        logViewController.setDocument(logDocument: document)
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func setupViewController(){
-        let viewController = LogViewController(logFile: logFile)
+    func setupViewController(document: LogDocument?){
+        let viewController = LogViewController(logDocument: document)
         contentViewController = viewController
     }
     
@@ -65,8 +73,8 @@ class LogWindowController: NSWindowController {
 extension LogWindowController: NSWindowDelegate{
     
     func windowWillClose(_ notification: Notification) {
-        if GlobalPreferences.shared.rememberWindowFrame{
-            window?.saveFrame(usingName: logFile.preferences.id)
+        if GlobalPreferences.shared.rememberWindowFrame, let logDocument = logDocument{
+            window?.saveFrame(usingName: logDocument.logData.id)
         }
     }
     
