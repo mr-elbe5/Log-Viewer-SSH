@@ -208,7 +208,12 @@ extension LogWindowController: NSToolbarDelegate {
     }
     
     @objc func reloadView() {
-        logViewController.reloadFullFile()
+        if let _ = logDocument{
+            logViewController.reloadFullFile()
+        }
+        else{
+            NSAlert.acceptInfo(message: "This window has no document loaded")
+        }
     }
     
     @objc func openGlobalPreferences() {
@@ -222,6 +227,9 @@ extension LogWindowController: NSToolbarDelegate {
             let controller = DocumentPreferencesWindowController(log: logDocument)
             controller.centerInWindow(outerWindow: window)
             NSApp.runModal(for: controller.window!)
+        }
+        else{
+            NSAlert.acceptInfo(message: "This window has no document loaded")
         }
     }
     
@@ -238,19 +246,29 @@ extension LogWindowController: NSToolbarDelegate {
     }
     
     @objc func start() {
-        logViewController.follow = true
-        logViewController.updateFromDocument()
-        if let toolbar = window?.toolbar{
-            toolbar.removeItem(at: 3)
-            toolbar.insertItem(withItemIdentifier: toolbarItemPause, at: 3)
+        if let _ = logDocument{
+            logViewController.follow = true
+            logViewController.updateFromDocument()
+            if let toolbar = window?.toolbar{
+                toolbar.removeItem(at: 3)
+                toolbar.insertItem(withItemIdentifier: toolbarItemPause, at: 3)
+            }
+        }
+        else{
+            NSAlert.acceptInfo(message: "This window has no document loaded")
         }
     }
     
     @objc func pause() {
-        logViewController.follow = false
-        if let toolbar = window?.toolbar{
-            toolbar.removeItem(at: 3)
-            toolbar.insertItem(withItemIdentifier: toolbarItemStart, at: 3)
+        if let _ = logDocument{
+            logViewController.follow = false
+            if let toolbar = window?.toolbar{
+                toolbar.removeItem(at: 3)
+                toolbar.insertItem(withItemIdentifier: toolbarItemStart, at: 3)
+            }
+        }
+        else{
+            NSAlert.acceptInfo(message: "This window has no document loaded")
         }
     }
     
